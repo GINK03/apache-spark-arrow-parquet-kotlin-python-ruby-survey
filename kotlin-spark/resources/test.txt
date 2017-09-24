@@ -1,0 +1,12 @@
+Bryan Cutler is a software engineer at IBM’s Spark Technology Center STC
+
+Beginning with Apache Spark version 2.3, Apache Arrow will be a supported dependency and begin to offer increased performance with columnar data transfer. If you are a Spark user that prefers to work in Python and Pandas, this is a cause to be excited over! The initial work is limited to collecting a Spark DataFrame with toPandas(), which I will discuss below, however there are many additional improvements that are currently underway.
+
+Optimizing Spark Conversion to Pandas
+The previous way of converting a Spark DataFrame to Pandas with DataFrame.toPandas() in PySpark was painfully inefficient. Basically, it worked by first collecting all rows to the Spark driver. Next, each row would get serialized into Python’s pickle format and sent to a Python worker process. This child process unpickles each row into a huge list of tuples. Finally, a Pandas DataFrame is created from the list using pandas.DataFrame.from_records().
+
+This all might seem like standard procedure, but suffers from 2 glaring issues: 1) even using CPickle, Python serialization is a slow process and 2) creating a pandas.DataFrame using from_records must slowly iterate over the list of pure Python data and convert each value to Pandas format. See here for a detailed analysis.
+
+Here is where Arrow really shines to help optimize these steps: 1) Once the data is in Arrow memory format, there is no need to serialize/pickle anymore as Arrow data can be sent directly to the Python process, 2) When the Arrow data is received in Python, then pyarrow can utilize zero-copy methods to create a pandas.DataFrame from entire chunks of data at once instead of processing individual scalar values. Additionally, the conversion to Arrow data can be done on the JVM and pushed back for the Spark executors to perform in parallel, drastically reducing the load on the driver.
+
+As of the merging of SPARK-13534, the use of Arrow when calling toPandas() needs to be enabled by setting the SQLConf “spark.sql.execution.arrow.enable” to “true”. Let’s look at a simple usage example.
