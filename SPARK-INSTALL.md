@@ -15,3 +15,19 @@ $ sudo ln -s $HOME/spark-2.2.0-bin-hadoop2.7 /usr/local/lib/spark
 export SPARK_HOME=/usr/local/lib/spark
 export PATH=$SPARK_HOME/bin:$PATH
 ```
+
+# Install Nightly
+欲しい機能のバージョンこそ、入っていなかったりするので、[nightly](https://people.apache.org/~pwendell/spark-nightly/spark-master-bin)をちょくちょく入れる必要がある  
+例えば、apache arrowが一部サポートされているのは2.3.0であり、これはnightlyから入れる  
+
+このリンクを消して、再度貼りなおす必要がある
+```console
+$ sudo rm /usr/local/lib/spark
+$ sudo ln -s $HOME/spark-2.3.0-SNAPSHOT /usr/local/lib/spark
+```
+
+そして大抵ビルドされていないので、ビルドする  
+```console
+$ cd spark-2.3.0-SNAPSHOT 
+$ mvn package
+```
