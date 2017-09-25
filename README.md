@@ -49,6 +49,24 @@ apache arrow elapsed 0.8107788562774658　 # Apache Arrow使ってる
 2   2  0.940923
 ```
 
-このバージョンのSparkはNightlyと呼ばれる安定していないバージョンなので、コンパイル等はされていないので、自分でやる必要があります。　　
-
+このバージョンのSparkはNightlyと呼ばれる安定していないバージョンなので、コンパイル等はされていないので、自分でやる必要があります。　
+```console
+from pyspark.sql.functions import rand
+import pandas as pd
+import pyarrow.parquet as pq
+import pyarrow as pa
+import time
+df = spark.range(1 << 22).toDF("id").withColumn("x", rand())
+df.printSchema()
+start = time.time()
+pdf = df.toPandas()
+print('normal elapsed', time.time() - start)
+spark.conf.set("spark.sql.execution.arrow.enable", "true")
+start = time.time()
+pdf = df.toPandas()
+print('apache arrow elapsed', time.time() - start )
+print( pdf.head() )
+arrow_table = pa.Table.from_pandas(pdf)
+pq.write_table(arrow_table, 'local.pq', use_dictionary=False, compression=None)
+```
 
