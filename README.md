@@ -70,5 +70,9 @@ arrow_table = pa.Table.from_pandas(pdf)
 pq.write_table(arrow_table, 'local.pq', use_dictionary=False, compression=None)
 ```
 
-## 
+## Python単独でParquetフォーマットを使う
+ParquetフォーマットはArrow形式とはまた別のようなものらしいく、圧縮率が高いことを売りにしているのですが、このように、pyarrow(Apache ArrowのPythonでのモジュール名)から呼び出して、読み書きすることができます。  
+
+```python
+```
 
