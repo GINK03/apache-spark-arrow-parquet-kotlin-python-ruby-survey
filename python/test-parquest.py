@@ -7,9 +7,7 @@ import pyarrow as pa
 def pandas_parquest():
   df = pd.DataFrame( {'a':[i for i in range(1000)], 'axa':[i*i for i in range(1000)], 'axastr':[str(i*i) for i in range(1000)], 'axabool':[ i%2 == 0 for i in range(1000)], 'axadouble':[ i/10.0 for i in range(1000)] } )
   print( df.head() )
-
   arrow_table = pa.Table.from_pandas(df)
-
   pq.write_table(arrow_table, 'local.pq', use_dictionary=False, compression=None)
 
 def parquest_pandas():
