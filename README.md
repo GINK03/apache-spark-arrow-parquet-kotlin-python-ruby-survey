@@ -70,5 +70,5 @@ arrow_table = pa.Table.from_pandas(pdf)
 pq.write_table(arrow_table, 'local.pq', use_dictionary=False, compression=None)
 ```
 
-## !
+## 
 
