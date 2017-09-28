@@ -26,7 +26,6 @@ object CommerceStats {
       }.filter { 
         it != null
       }.map { it!! }
-    //println( df )
     return df
   }
   fun main(sc : JavaSparkContext) {
@@ -35,11 +34,24 @@ object CommerceStats {
     val ans = input.groupBy {
       it["contory"]
     }.map {
-      val (key, vals) = Pair(it._1(), it._2() )// println( it )
-      println(key)
-      1
-    }.reduce { y,x -> y + x } 
-    println( ans )
+      val (key, vals) = Pair( it._1(), it._2() )// println( it )
+      val size = vals.toList().size
+      val total = vals.map { 
+        val size = it.toList().size
+        val sum = it.toList().filter {
+          it.first.matches(Regex("Y[0-9]+"))
+        }.map { 
+          try { it.second.toString().toDouble() } catch (e: java.lang.Exception ) { 0.0 } 
+        }.reduce { y,x -> y + x }
+        sum/size
+      }.reduce { y, x -> y + x }
+      Pair(key, total/size)
+    }.collect()
+    ans.sortedBy {
+      it.second * -1
+    }.map {
+      println(it)
+    }
   }
 }
 
