@@ -18,13 +18,13 @@ for vals in f:
       except:
         obj[k] = None
     if k == '市区町村名':
-      obj['contry'] = obj[k]
+      obj['contory'] = obj[k]
       del obj[k]
     if k == '市区町村コード':
       obj['city'] = obj[k]
       del obj[k]
     if '年' in k:
-      obj[ k.replace('年', '') ] = obj[k]
+      obj[ 'Y' + k.replace('年', '') ] = obj[k]
       del obj[k]
   print('a', obj )
   w.write( json.dumps(obj, ensure_ascii=False) + '\n' )
